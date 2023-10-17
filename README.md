@@ -1,0 +1,2 @@
+- Compile with `make` (`latexmk` required). (see `Makefile`)
+- Disable instructions by setting `\showinstructionsfalse` around line 98.
