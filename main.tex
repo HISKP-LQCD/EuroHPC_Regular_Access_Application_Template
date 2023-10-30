@@ -1,25 +1,19 @@
 \documentclass[a4paper,12pt]{article}
 \PassOptionsToPackage{hyphens}{url}
-\usepackage[
-  backend=biber,
-  defernumbers=true,
-  sorting=none,
-  style=numeric-comp,
-  natbib=true,
-  url=false, 
-  giveninits=true,
-  hyperref,
-  eprint=true,
-  doi=true
-]{biblatex}
-\renewbibmacro{in:}{}
 \usepackage{makecell}
 \usepackage{lastpage}
 \usepackage{csquotes}
+
+\usepackage{sidecap}    
+\sidecaptionvpos{figure}{c}    
+
+\input{biblatexTweaks}
 \addbibresource{refs.bib}
+
 \usepackage[top=4.5cm, bottom=2.9cm, left=2.1cm, right=2.1cm]{geometry}
 \usepackage{xltabular}
 \usepackage{enumitem}
+\setlist{nosep}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,allcolors=blue}
 \usepackage{pgfgantt}
@@ -33,7 +27,7 @@
 \usepackage{slashed}
 \usepackage{fontspec}
 \usepackage{unicode-math}
-\usepackage{dblfnote} % multicolumn footnotes
+%\usepackage{dblfnote} % multicolumn footnotes
 \defaultfontfeatures{ Scale=MatchLowercase, Ligatures = TeX }
 \setmainfont{Arial}
 \setsansfont{Arial}

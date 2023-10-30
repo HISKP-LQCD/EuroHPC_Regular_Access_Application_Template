@@ -1,0 +1,199 @@
+\usepackage[backend=biber,terseinits=false,sorting=none,style=phys,biblabel=brackets,
+  defernumbers=true,minnames=15,maxnames=99,
+  minsortnames=15, maxsortnames=99,
+  minbibnames=15, maxbibnames=99]{biblatex}
+
+%% we want to print titles only for own publications
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map[overwrite]{
+      \pertype{article}
+      \step[notfield=keywords, final]
+      %\step[fieldsource=keywords, notmatch={own}, final]
+      \step[fieldset=title, null]
+    }
+    \map[overwrite]{
+      \pertype{article}
+      \step[fieldsource=keywords, notmatch={own}, final]
+      \step[fieldset=title, null]
+    }
+  }
+}
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite=true]{
+    \map{
+      \step[fieldsource=month,
+        match=\regexp{[J,j]an},
+        replace={01}]
+      \step[fieldsource=month,
+        match=\regexp{[F,f]eb},
+        replace={02}]
+      \step[fieldsource=month,
+        match=\regexp{[M,m][A,a][R,r]},
+        replace={03}]
+      \step[fieldsource=month,
+        match=\regexp{[A,a]pr},
+        replace={04}]
+      \step[fieldsource=month,
+        match=\regexp{[M,m][A,a][Y,y][\s]*[\d]*},
+        replace={05}]
+      \step[fieldsource=month,
+        match=\regexp{[J,j][U,u][N,n]},
+        replace={06}]
+      \step[fieldsource=month,
+        match=\regexp{[J,j]ul},
+        replace={07}]
+      \step[fieldsource=month,
+        match=\regexp{[A,a][U,u][G,g][\s]*[\d]*},
+        replace={08}]
+      \step[fieldsource=month,
+        match=\regexp{[S,s]ep},
+        replace={09}]
+      \step[fieldsource=month,
+        match=\regexp{[O,o]ct},
+        replace={10}]
+      \step[fieldsource=month,
+        match=\regexp{[N,n]ov},
+        replace={11}]
+      \step[fieldsource=month,
+        match=\regexp{[D,d][E,e][C,c][\s]*[\d]*},
+        replace={12}]
+      \step[fieldsource=doi,
+        match=\regexp{ARXIV},
+        replace={arXiv}]
+      \step[fieldsource=doi,
+        match=\regexp{arxiv},
+        replace={arXiv}]
+    }
+  }
+}
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite=true]{
+    \map{
+      \pertype{article}
+      \step[fieldset=primaryClass, null]
+    }
+  }
+}
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite=true]{
+    \map{
+      \pertype{inproceedings}
+      \step[fieldset=primaryClass, null]
+    }
+  }
+}
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite=true]{
+    \map{
+      \pertype{misc}
+      \step[fieldset=primaryClass, null]
+    }
+  }
+}
+
+\input{journalAbbrevMaps}
+
+%% the following takes care of showing all highlighted names
+%% even if they are exceeding the maxnames limit
+
+\newcounter{nameshighlight}
+\newtoggle{ellipsis}
+
+\makeatletter
+\newbibmacro*{name:etal:delim}[1]{%
+  \ifnumgreater{\value{listcount}}{\value{liststart}}%
+    {\ifboolexpr{%
+       test {\ifnumless{\value{listcount}}{\value{liststop}}}
+       or
+       test \ifmorenames
+     }%
+       {\printdelim{multinamedelim}}
+       {\lbx@finalnamedelim{#1}}}
+    {}}%
+\makeatother
+
+\NewBibliographyString{etint}
+\DefineBibliographyStrings{english}{etint = {et\addabbrvspace int\adddot}}
+
+\DeclareNameFormat{given-family-etal}{%
+  \letbibmacro{name:delim}{name:etal:delim}%
+  \ifnumcomp{\value{listcount}}{=}{1}
+            {\setcounter{nameshighlight}{0}%
+              \global\toggletrue{ellipsis}%
+            }%
+            {}%
+            \ifboolexpr{test {\ifnumcomp{\value{listcount}}{=}{1}}
+              or (test {\ifnumcomp{\value{listtotal}}{<}{3}}
+                  or test {\ifnumequal{\value{listcount}}{\value{listtotal}}})%
+            }%
+                       {\ifgiveninits
+                         {\usebibmacro{name:given-family}
+                           {\namepartfamily}
+                           {\namepartgiveni}
+                           {\namepartprefix}
+                           {\namepartsuffix}
+                         }%
+                         {\usebibmacro{name:given-family}
+                           {\namepartfamily}
+                           {\namepartgiven}
+                           {\namepartprefix}
+                           {\namepartsuffix}}
+                       }%
+                       {%
+                         \ifboolexpr{test {\ifitemannotation{highlight}}}
+                         {%
+                           \global\toggletrue{ellipsis}%
+                           \ifgiveninits
+                               {\usebibmacro{name:given-family}
+                                 {\namepartfamily}
+                                 {\namepartgiveni}
+                                 {\namepartprefix}
+                                 {\namepartsuffix}
+                               }%
+                               {\usebibmacro{name:given-family}
+                                 {\namepartfamily}
+                                 {\namepartgiven}
+                                 {\namepartprefix}
+                                 {\namepartsuffix}
+                               }%
+                         }%
+                         {\stepcounter{nameshighlight}%
+                           \iftoggle{ellipsis}%
+                                    {\addcomma\space\bibstring[\textit]{etint}\global\togglefalse{ellipsis}\isdot}% et int italic
+                                    {}%
+                         }%
+                       }%
+                       \ifboolexpr{
+                         test {\ifnumequal{\value{listcount}}{\value{liststop}}}%
+                         and test \ifmorenames%
+                       }%
+                       {\andothersdelim\bibstring{andothers}}%
+                       {}%
+}
+
+\DeclareNameAlias{sortname}{given-family-etal}
+\DeclareNameAlias{author}{given-family-etal}
+\DeclareNameAlias{editor}{given-family-etal}
+\DeclareNameAlias{translator}{given-family-etal}
+
+\setlength\bibitemsep{0pt}
+
+\ExecuteBibliographyOptions{
+  giveninits=true,
+  isbn=false,
+  eprint=true,
+  url=false,
+  %maxbibnames=3,
+  alldates=long,
+  doi=false,
+  articletitle=true,
+  uniquename=init
+}
+
+\renewbibmacro{in:}{}
+
